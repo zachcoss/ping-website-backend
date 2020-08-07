@@ -5,7 +5,8 @@ const
 module.exports = {
     getPingData: async (req, res, next) => {
         try {
-            return res.status(200).send('OK')
+            const pings = await PingSchema.Ping.find({}, 'url iconPath duration')
+            return res.status(200).send(pings)
         } catch (err) {
             console.log(err)
             return res.status(500).send(err)
@@ -13,7 +14,9 @@ module.exports = {
     },
     storePingData: async (req, res, next) => {
         try {
-            return res.status(200).send('OK')
+            const ping = new PingSchema.Ping(req.body)
+            await ping.save()
+            return res.status(200).send(ping)
         } catch (err) {
             console.log(err)
             return res.status(500).send(err)
@@ -21,6 +24,7 @@ module.exports = {
     },
     deletePingData: async (req, res, next) => {
         try {
+            await PingSchema.Ping.remove()
             return res.status(200).send('OK')
         } catch (err) {
             console.log(err)
