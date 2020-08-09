@@ -1,6 +1,7 @@
 const
     _ = require('lodash'),
-    PingSchema = require('../schema/pingSchema');
+    PingSchema = require('../schema/pingSchema'),
+    PingService = require('../services/pingService');
 
 module.exports = {
     getPingData: async (req, res, next) => {
@@ -14,12 +15,13 @@ module.exports = {
     },
     storePingData: async (req, res, next) => {
         try {
-            const ping = new PingSchema.Ping(req.body)
-            await ping.save()
-            return res.status(200).send(ping)
+            const ping = await PingService.pingAndGetIconPath(req.body.url)
+            const pingData = new PingSchema.Ping(ping)
+            await pingData.save()
+            return res.status(200).send(pingData)
         } catch (err) {
             console.log(err)
-            return res.status(500).send(err)
+            return res.status(500).send(err.message)
         }
     },
     deletePingData: async (req, res, next) => {
